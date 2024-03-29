@@ -4,7 +4,8 @@
   "description": "A minimal SQL based DB based on CSV files. For educational purposes only.",
   "main": "./src/index.js",
   "directories": {
-    "doc": "docs"
+    "doc": "docs",
+    "test": "tests"
   },
   "scripts": {
     "test": "jest",
@@ -42,7 +43,16 @@
   },
   "dependencies": {
     "csv-parser": "^3.0.0",
+    "fs": "^0.0.1-security",
     "json2csv": "^6.0.0-alpha.2",
     "xterm": "^5.3.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/status-20X/stylusdb-sql-assignment-Avhinaw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/status-20X/stylusdb-sql-assignment-Avhinaw/issues"
+  },
+  "homepage": "https://github.com/status-20X/stylusdb-sql-assignment-Avhinaw#readme"
 }
