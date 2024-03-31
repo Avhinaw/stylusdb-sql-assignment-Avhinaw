@@ -1,5 +1,5 @@
 const readCSV = require('../../src/csvReader');
-const parseQuery = require('../../src/queryParser');
+const {parseQuery} = require('../../src/queryParser');
 const executeSELECTQuery = require('../../src/index');
 
 test('Read CSV File', async () => {
@@ -7,7 +7,7 @@ test('Read CSV File', async () => {
     expect(data.length).toBeGreaterThan(0);
     expect(data.length).toBe(3);
     expect(data[0].name).toBe('John');
-    expect(data[0].age).toBe('30'); //ignore the string type here, we will fix this later
+    expect(data[0].age).toBe('30');
 });
 
 test('Parse SQL Query', () => {
@@ -16,7 +16,12 @@ test('Parse SQL Query', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
-        whereClause: null
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
+        whereClauses: []
     });
 });
 
@@ -36,13 +41,19 @@ test('Parse SQL Query with WHERE Clause', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
         whereClauses: [{
-          field: "age",
-          operator: "=",
-          value: "25",
-        }],
+            field: 'age',
+            operator: '=',
+            value: '25'
+        }]
     });
 });
+
 
 test('Execute SQL Query with WHERE Clause', async () => {
     const query = 'SELECT id, name FROM sample WHERE age = 25';
@@ -59,14 +70,19 @@ test('Parse SQL Query with Multiple WHERE Clauses', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
         whereClauses: [{
-            "field": "age",
-            "operator": "=",
-            "value": "30",
+            field: 'age',
+            operator: '=',
+            value: '30'
         }, {
-            "field": "name",
-            "operator": "=",
-            "value": "John",
+            field: 'name',
+            operator: '=',
+            value: 'John'
         }]
     });
 });

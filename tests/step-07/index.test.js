@@ -1,5 +1,5 @@
 const readCSV = require('../../src/csvReader');
-const parseQuery = require('../../src/queryParser');
+const {parseQuery} = require('../../src/queryParser');
 const executeSELECTQuery = require('../../src/index');
 
 test('Read CSV File', async () => {
@@ -7,7 +7,7 @@ test('Read CSV File', async () => {
     expect(data.length).toBeGreaterThan(0);
     expect(data.length).toBe(3);
     expect(data[0].name).toBe('John');
-    expect(data[0].age).toBe('30'); //ignore the string type here, we will fix this later
+    expect(data[0].age).toBe('30');
 });
 
 test('Parse SQL Query', () => {
@@ -16,7 +16,12 @@ test('Parse SQL Query', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
-        whereClauses: []
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
+        whereClauses: [],
     });
 });
 
@@ -26,7 +31,6 @@ test('Execute SQL Query', async () => {
     expect(result.length).toBeGreaterThan(0);
     expect(result[0]).toHaveProperty('id');
     expect(result[0]).toHaveProperty('name');
-    expect(result[0]).not.toHaveProperty('age');
     expect(result[0]).toEqual({ id: '1', name: 'John' });
 });
 
@@ -36,10 +40,15 @@ test('Parse SQL Query with WHERE Clause', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
         whereClauses: [{
-          field: "age",
-          operator: "=",
-          value: "25",
+            field: 'age',
+            operator: '=',
+            value: '25',
         }],
     });
 });
@@ -59,23 +68,43 @@ test('Parse SQL Query with Multiple WHERE Clauses', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
+        groupByFields: null,
+        hasAggregateWithoutGroupBy: false,
+        joinCondition: null,
+        joinTable: null,
+        joinType: null,
         whereClauses: [{
-            "field": "age",
-            "operator": "=",
-            "value": "30",
+            field: 'age',
+            operator: '=',
+            value: '30',
         }, {
-            "field": "name",
-            "operator": "=",
-            "value": "John",
-        }]
+            field: 'name',
+            operator: '=',
+            value: 'John',
+        }],
     });
 });
+
 
 test('Execute SQL Query with Multiple WHERE Clause', async () => {
     const query = 'SELECT id, name FROM sample WHERE age = 30 AND name = John';
     const result = await executeSELECTQuery(query);
     expect(result.length).toBe(1);
     expect(result[0]).toEqual({ id: '1', name: 'John' });
+});
+
+test('Execute SQL Query with Greater Than', async () => {
+    const queryWithGT = 'SELECT id FROM sample WHERE age > 22';
+    const result = await executeSELECTQuery(queryWithGT);
+    expect(result.length).toEqual(2);
+    expect(result[0]).toHaveProperty('id');
+});
+
+test('Execute SQL Query with Not Equal to', async () => {
+    const queryWithGT = 'SELECT name FROM sample WHERE age != 25';
+    const result = await executeSELECTQuery(queryWithGT);
+    expect(result.length).toEqual(2);
+    expect(result[0]).toHaveProperty('name');
 });
 
 test('Execute SQL Query with Greater Than', async () => {
